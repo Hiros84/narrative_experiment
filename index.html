@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>商品マップ検討</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+    }
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+      background-color: #f8f8f8;
+    }
+    #canvas-container {
+      width: 1040px;
+      height: 820px;
+      margin: 20px auto;
+      overflow: hidden;
+      border: 1px solid lightgray;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>商品マップ検討</h1>
+  <div id="toolbar" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+    <label for="json-file-list" style="font-size: 14px; color: gray;">保存済みファイル：</label>
+    <select id="json-file-list"></select>
+    <button id="load-btn">読込</button>
+    <input type="text" id="filename-input" placeholder="保存ファイル名（.json不要）" style="margin-left: 20px;">
+    <button id="save-btn">保存</button>
+  </div>
+
+  <div id="canvas-container">
+    <svg id="mysvg" width="1000" height="800" style="display: block;">
+      <g class="viewport">
+        <g class="link-layer"></g>
+        <g class="zoom-layer"></g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- 新しいズーム制御スクリプト -->
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const svg = d3.select("#mysvg");
+    const zoomLayer = svg.select("g.zoom-layer");
+
+    // --- ズーム定義 ---
+    const zoom = d3.zoom()
+      .scaleExtent([0.5, 3])
+      .on("zoom", (event) => {
+        zoomLayer.attr("transform", event.transform);
+      });
+
+    svg.call(zoom);
+
+    // --- ズームを後から main.js 側で制御できるように公開 ---
+    window.svg = svg;
+    window.zoom = zoom;
+    window.zoomLayer = zoomLayer;
+
+    // --- main.js 側でデータ読込完了後に呼ぶ用の関数 ---
+    window.resetZoomToFit = function(bounds) {
+      if (!bounds || !bounds.width || !bounds.height) return;
+
+      const svgWidth = +svg.attr("width");
+      const svgHeight = +svg.attr("height");
+
+      const scale = Math.min(svgWidth / bounds.width, svgHeight / bounds.height) * 0.9;
+      const translate = [
+        (svgWidth - bounds.width * scale) / 2 - bounds.x * scale,
+        (svgHeight - bounds.height * scale) / 2 - bounds.y * scale
+      ];
+
+      svg.transition()
+        .duration(500)
+        .call(zoom.transform,
+              d3.zoomIdentity.translate(translate[0], translate[1]).scale(scale));
+    };
+  });
+  </script>
+  
+  <script src="/js/main.js"></script>
+
+</body>
+</html>

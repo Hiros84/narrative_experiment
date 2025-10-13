@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+ <div style="height: 800px; width: 100%; overflow: auto; border:1px solid black;">
+   <svg id="mysvg" width="2000" height="1480"></svg>
+ </div>
+ <br>
+ <div style="margin-top: 20px;">
+   <button id="saveBtn">保存する</button>
+   <input type="file" id="loadInput">
+ </div>
+ <div style="margin-top: 20px;">
+   <button id="addNodeBtn">ノード追加</button>
+   <button id="deleteModeBtn">削除モード切替</button>
+ </div>
+ <div style="margin-top: 20px;">
+   <input type="text" id="labelInput" placeholder="新しいテキスト">
+   <button id="updateLabelBtn">選択ノード名を変更</button>
+ </div>
+
+  <script>
+    window.onload = function() {
+      const svg = d3.select("#mysvg");
+      const zoomLayer = svg.append("g").attr("class", "zoom-layer");
+
+      // Add D3 zoom behavior
+      const zoom = d3.zoom().on("zoom", (event) => {
+        zoomLayer.attr("transform", event.transform);
+      });
+      svg.call(zoom);
+
+      let data = [
+        { id: "A", x: 100, y: 100 },
+        { id: "B", x: 200, y: 200 }
+      ];
+
+      let links = [];
+
+      const savedGraph = localStorage.getItem("graph_data");
+      if (savedGraph) {
+        const graph = JSON.parse(savedGraph);
+        data = graph.nodes;
+        if (graph.links) {
+          links = graph.links.map(link => {
+            return {
+              id: link.id,
+              source: data.find(node => node.id === link.source.id),
+              target: data.find(node => node.id === link.target.id)
+            };
+          });
+        }
+        console.log("復元データ:", graph);
+      }
+      let selectedNode = null;
+      let deleteMode = false;
+
+      function updateLinks() {
+        const lines = zoomLayer.selectAll("line")
+          .data(links, d => d.id);
+
+        lines.enter()
+          .append("line")
+          .attr("stroke", "lightgray")
+          .attr("stroke-width", 1)
+          .on("click", (event, d) => {
+            links = links.filter(link => link.id !== d.id);
+            updateLinks();
+          })
+          .merge(lines)
+          .attr("x1", d => d.source.x)
+          .attr("y1", d => d.source.y)
+          .attr("x2", d => d.target.x)
+          .attr("y2", d => d.target.y);
+
+        lines.exit().remove();
+
+        zoomLayer.selectAll("circle")
+          .attr("stroke", d => d === selectedNode ? "red" : "none")
+          .attr("stroke-width", d => d === selectedNode ? 3 : 0);
+
+        // Save to localStorage
+        localStorage.setItem("graph_data", JSON.stringify({
+          nodes: data,
+          links: links
+        }));
+      }
+
+      const drag = d3.drag().on("drag", dragged);
+
+      function redrawNodes() {
+        const nodes = zoomLayer.selectAll("g.node")
+          .data(data, d => d.id)
+          .join(
+            enter => {
+              const g = enter.append("g").attr("class", "node");
+              g.append("circle")
+                .attr("r", 15);
+              g.append("text")
+                .attr("text-anchor", "middle")
+                .attr("font-size", "16px");
+              return g;
+            }
+          );
+
+        nodes.attr("transform", d => `translate(${d.x},${d.y})`)
+          .call(drag)
+          .on("click", (event, d) => {
+            if (deleteMode) {
+              data = data.filter(node => node.id !== d.id);
+              links = links.filter(link => link.source.id !== d.id && link.target.id !== d.id);
+              redrawNodes();
+              updateLinks();
+            } else {
+              if (!selectedNode) {
+                selectedNode = d;
+                updateLinks();
+              } else {
+                const newLink = {
+                  id: `${selectedNode.id}-${d.id}-${Date.now()}`,
+                  source: selectedNode,
+                  target: d
+                };
+                links.push(newLink);
+                selectedNode = null;
+                updateLinks();
+              }
+            }
+          });
+
+        nodes.select("circle")
+          .attr("fill", d => d.icon ? "none" : "lightgray"); // placeholder
+
+        nodes.select("text")
+          .attr("y", 4)
+          .text(d => d.id);
+
+        localStorage.setItem("graph_data", JSON.stringify({
+          nodes: data,
+          links: links
+        }));
+      }
+
+      redrawNodes();
+      updateLinks();
+
+      function dragged(event, d) {
+        d.x = event.x;
+        d.y = event.y;
+        d3.select(this)
+          .attr("transform", `translate(${d.x},${d.y})`);
+
+        updateLinks();
+
+        // Ensure saving nodes and links after drag
+        localStorage.setItem("graph_data", JSON.stringify({
+          nodes: data,
+          links: links
+        }));
+      }
+      // Save button: download JSON
+      document.getElementById("saveBtn").onclick = () => {
+        const blob = new Blob([JSON.stringify({ nodes: data, links: links }, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "graph_data.json";
+        a.click();
+        URL.revokeObjectURL(url);
+      };
+
+      // Load input: upload JSON
+      document.getElementById("loadInput").addEventListener("change", function() {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            const graph = JSON.parse(e.target.result);
+            data = graph.nodes;
+            links = graph.links.map(link => {
+              return {
+                id: link.id,
+                source: data.find(node => node.id === link.source.id),
+                target: data.find(node => node.id === link.target.id)
+              };
+            });
+            updateLinks();
+            redrawNodes();
+
+            // 明示的に保存
+            localStorage.setItem("graph_data", JSON.stringify({
+              nodes: data,
+              links: links
+            }));
+          };
+          reader.readAsText(file);
+        }
+      });
+
+      document.getElementById("addNodeBtn").onclick = () => {
+        const newId = "N" + Date.now();
+        data.push({ id: newId, x: 100, y: 100 });
+        redrawNodes();
+        updateLinks();
+      };
+
+      document.getElementById("deleteModeBtn").onclick = () => {
+        deleteMode = !deleteMode;
+        alert(deleteMode ? "削除モード ON" : "削除モード OFF");
+      };
+    // ノード名編集ボタン
+    document.getElementById("updateLabelBtn").onclick = () => {
+      if (selectedNode) {
+        const newLabel = document.getElementById("labelInput").value.trim();
+        if (newLabel) {
+          const oldId = selectedNode.id;
+          selectedNode.id = newLabel;
+
+          // Fully rebuild links from data
+          links = links.map(link => {
+            return {
+              id: link.id,
+              source: data.find(node => node.id === (link.source.id === oldId ? newLabel : link.source.id)),
+              target: data.find(node => node.id === (link.target.id === oldId ? newLabel : link.target.id))
+            };
+          });
+
+          redrawNodes();
+          updateLinks();
+        } else {
+          alert("新しいテキストを入力してください");
+        }
+      } else {
+        alert("ノードが選択されていません");
+      }
+    };
+    }
+  </script>
+</body>
+</html>

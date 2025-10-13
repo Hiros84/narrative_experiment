@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>データ分析ページ</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
+        h1, h2 { text-align: center; }
+        .container01 { display: flex; justify-content: space-around; width: 95%; }
+        #scale-specification { height: 200px; overflow-y: scroll; border: 1px solid #ccc; width: 100%; }
+        .container02 { display: flex; justify-content: space-around; width: 95%; }
+        #table-container { height: 800px; overflow-y: scroll; border: 1px solid #ccc; width: 60%; }
+        #visuals-container { width: 35%; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 6px; font-size: 12px; text-align: center;}
+        thead th { background-color: #f2f2f2; position: sticky; top: 0; }
+        select { margin: 5px; padding: 5px; font-size: 16px; }
+        .controls { display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+    <h1>データ分析</h1>
+    <div class="container01">
+        <div id="scale-specification" >
+            <hr>
+            <h2>変数の尺度指定</h2>
+        </div> 
+    </div>
+    <br>
+    <div class="container02">
+        <div id="table-container">
+            <h2>データテーブル</h2>
+            </div>
+        <div id="visuals-container">
+            <h2>ヒストグラム</h2>
+            <select id="histogram-selector">
+                </select>
+            <div id="histogram-container"></div>
+
+            <hr>
+
+            <h2>クロス集計</h2>
+            <div class="controls">
+                <span>行:</span> <select id="crosstab-row-selector"></select>
+                <span>列:</span> <select id="crosstab-col-selector"></select>
+            </div>
+            <div id="crosstab-container">
+                </div>
+        </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="js/analysis.js"></script>
+</body>
+</html>

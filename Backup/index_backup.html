@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>意味マップ実験</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    #canvas-container {
+      width: 100%;
+      overflow: auto;
+      border: 1px solid lightgray;
+    }
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+      background-color: #f8f8f8;
+    }
+    g.node image {
+      pointer-events: none;
+      /* fallback to ensure visibility if image fails to load */
+      background: #eee;
+      outline: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>意味マップ配置実験</h1>
+  <div id="toolbar" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 10px;">
+    <!-- 左側：削除ボタン -->
+    <div>
+      <button onclick="deleteSelectedNode()">選択ノードを削除</button>
+    </div>
+
+    <!-- 中央：ノード追加フォーム -->
+    <div>
+      <input type="text" id="nodeNameInput" placeholder="ノード名">
+      <select id="icon-select"></select>
+      <button onclick="addNodeFromForm()">ノードを追加</button>
+    </div>
+
+    <!-- 右側：保存フォーム -->
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <input type="text" id="filename-input" placeholder="保存ファイル名（.json不要）">
+      <button id="save-btn">保存</button>
+    </div>
+
+    <!-- 読み込みフォーム 
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <input type="text" id="loadFilenameInput" placeholder="読み込みファイル名（.json不要）">
+      <button onclick="loadJson()">開く</button>
+    </div>
+    -->
+
+    <!-- 保存済みファイル一覧 -->  
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <label for="json-file-list" style="font-size: 14px; color: gray;">保存済みファイル：</label>
+      <select id="json-file-list"></select>
+      <button onclick="loadSelectedJson()">読み込む</button>
+    </div>
+  </div>
+
+  <!-- スクロール可能なキャンバス領域 -->
+  <div id="canvas-container" style="width: 100%; overflow: auto; border:1px solid lightgray;">
+    <svg id="mysvg" width="2000" height="1480">
+      <!-- ズーム対象全体のラッパー -->
+      <g class="viewport">
+        <g class="link-layer"></g>
+        <g class="zoom-layer"></g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ズーム機能の初期化 -->
+  <script>
+    const svgRef = d3.select("#mysvg");
+    const viewport = svgRef.select("g.viewport");
+    const zoom = d3.zoom()
+      .scaleExtent([0.5, 5])
+      .on("zoom", event => {
+        viewport.attr("transform", event.transform);
+      });
+    svgRef.call(zoom);
+  </script>
+
+
+  <!-- 画像リスト取得＆セレクトボックス埋め込み -->
+  <script>
+    fetch('/api/images')
+      .then(response => response.json())
+      .then(images => {
+        window.allIcons = images;
+        const select = document.getElementById('icon-select');
+        images.forEach(filename => {
+          const option = document.createElement('option');
+          option.value = filename;
+          option.textContent = filename;
+          select.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error('画像リストの取得に失敗しました', error);
+      });
+  </script>
+
+
+  <!-- 選択しているノードの削除 -->
+  <script>
+    function deleteSelectedNode() {
+      if (!window.selectedNode) return;
+
+      const index = window.nodes.indexOf(window.selectedNode);
+      if (index >= 0) window.nodes.splice(index, 1);
+
+      // 削除されるノードに関係するリンクを削除
+      for (let i = window.links.length - 1; i >= 0; i--) {
+        if (window.links[i].source === window.selectedNode || window.links[i].target === window.selectedNode) {
+          window.links.splice(i, 1);
+        }
+      }
+
+      // SVG上のノードを削除
+      d3.selectAll("g.node")
+        .filter(d => d === window.selectedNode)
+        .remove();
+
+      // 削除されたノードのアイコンを select に戻す
+      if (window.selectedNode.icon) {
+        const select = document.getElementById("icon-select");
+        const iconFilename = window.selectedNode.icon.replace(/^images\//, '').replace(/\.\w+$/, '');
+
+        // 重複追加を防ぐ
+        if (!Array.from(select.options).some(opt => opt.value === iconFilename)) {
+          const option = document.createElement("option");
+          option.value = iconFilename;
+          option.textContent = iconFilename;
+          select.appendChild(option);
+        }
+      }
+
+      // アイコンセレクトボックスの再構築
+      const select = document.getElementById("icon-select");
+
+      // 一度すべてのオプションを削除
+      select.innerHTML = "";
+
+      // 現在使用中のアイコンを取得
+      const usedIcons = new Set(window.nodes.map(n => n.icon.replace(/^images\//, '').replace(/\.\w+$/, '')));
+
+      // 全アイコン候補（最初に取得したものを使う場合）
+      if (window.allIcons) {
+        window.allIcons.forEach(filename => {
+          const baseName = filename.replace(/\.\w+$/, '');
+          if (!usedIcons.has(baseName)) {
+            const option = document.createElement("option");
+            option.value = baseName;
+            option.textContent = baseName;
+            select.appendChild(option);
+          }
+        });
+      }
+
+      // リンクの更新処理
+      window.updateLinks();
+
+      window.selectedNode = null;
+    }
+  </script>
+
+
+  <!-- メインスクリプト -->
+  <script src="js/main.js"></script>
+
+  <!-- キャンバスの大きさを自動調整するコード -->
+  <script>
+    function adjustCanvasHeight() {
+      const toolbar = document.getElementById("toolbar");
+      const topOffset = toolbar ? toolbar.offsetTop + toolbar.offsetHeight : 0;
+      const windowHeight = window.innerHeight;
+      const canvas = document.getElementById("canvas-container");
+      if (canvas) {
+        canvas.style.height = (windowHeight - topOffset - 20) + "px";
+      }
+    }
+
+    window.addEventListener("load", adjustCanvasHeight);
+    window.addEventListener("resize", adjustCanvasHeight);
+  </script>
+
+ 
+  <script>
+    // 上のフォームから画像ノードを追加する処理
+    function addNodeFromForm() {
+      const name = document.getElementById("nodeNameInput").value.trim();
+      const icon = document.getElementById("icon-select").value;
+      if (name) {
+        addNode(name, icon);
+        // Remove the used image option from the dropdown
+        const select = document.getElementById("icon-select");
+        const optionToRemove = select.querySelector(`option[value="${icon}"]`);
+        if (optionToRemove) {
+          optionToRemove.remove();
+        }
+        document.getElementById("nodeNameInput").value = "";
+      } else {
+        alert("ノード名を入力してください");
+      }
+    }
+  </script>
+</body>
+</html>
