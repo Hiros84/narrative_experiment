@@ -24,12 +24,42 @@
       border-radius: 8px;
       background-color: #f4f8fb;
     }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .divider {
+      width: 2px;
+      height: 36px;
+      background-color: #ccc;
+    }
   </style>
 </head>
 <body>
 
   <h1>商品マップ検討</h1>
   <div id="toolbar" style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+    <!-- 新規追加: テキスト入力とボタン -->
+    <input type="text" id="text-node-input" placeholder="テキストを入力" style="padding:4px; font-size:14px; width:160px;" />
+    <button id="add-text-btn">テキスト追加</button>
+    <!-- 楕円追加-->
+    <label for="ellipse-color" style="font-size: 14px; color: gray;">色：</label>
+    <input type="color" id="ellipse-color" value="#ff6b6b" style="width: 40px; height: 28px; padding: 0; border: 1px solid #ccc; border-radius: 4px;">
+    <label for="line-style" style="font-size: 14px; color: gray;">線：</label>
+    <select id="line-style">
+      <option value="solid">実線</option>
+      <option value="dashed">点線</option>
+    </select>
+    <button id="add-ellipse-btn" title="キャンバスに楕円を追加">楕円追加</button>
+    
+    <span class="divider"></span>
+    <!-- 新規追加: 削除・復活・最背面ボタン -->
+    <button id="delete-node-btn" title="選択ノードを削除">削除</button>
+    <button id="restore-node-btn" title="直前の削除を取り消す">復活</button>
+    <button id="send-to-back-btn" title="選択ノードを最背面に移動">最背面</button>
+
+    <span class="divider"></span>
     <label for="json-file-list" style="font-size: 14px; color: gray;">保存済みファイル：</label>
     <select id="json-file-list"></select>
     <button id="load-btn">読込</button>

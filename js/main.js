@@ -2,12 +2,79 @@
 const svg = d3.select("#mysvg");
 const gLayer = svg.select("g.zoom-layer");
 
-// D3のドラッグ動作を定義
+// --- ノード選択ハイライト用: SVGにglowフィルタを追加 ---
+const defs = svg.append("defs");
+const filter = defs.append("filter").attr("id", "glow");
+filter.append("feGaussianBlur").attr("stdDeviation", 4).attr("result", "coloredBlur");
+const feMerge = filter.append("feMerge");
+feMerge.append("feMergeNode").attr("in", "coloredBlur");
+feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+
+// D3のドラッグ動作を定義（楕円ノード用: 移動・リサイズ・回転対応）
 const drag = d3.drag()
   .on("start", function(event, d) {
     d3.select(this).classed("dragging", true);
+    // 楕円の回転用: 開始時の角度とポインタ座標を覚えておく
+    if (d.type === "ellipse") {
+      d._dragStart = {
+        x: d.x,
+        y: d.y,
+        rx: d.rx,
+        ry: d.ry,
+        angle: d.angle || 0,
+        pointer: [event.x, event.y]
+      };
+    }
   })
   .on("drag", function(event, d) {
+    // --- 楕円ノード: 移動・リサイズ・回転 ---
+    if (d.type === "ellipse") {
+      const minRx = 10, minRy = 10;
+      const dragStart = d._dragStart || {};
+      // Shift: リサイズ
+      if (event.sourceEvent.shiftKey) {
+        // Resize based on drag direction
+        // Calculate drag vector in local ellipse axes
+        // Use dx,dy in screen space as increment to rx, ry
+        let dx = event.x - dragStart.pointer[0];
+        let dy = event.y - dragStart.pointer[1];
+        // Optionally, resize along the axis with larger movement
+        // Here, allow proportional resizing (rx: dx, ry: dy)
+        d.rx = Math.max(minRx, dragStart.rx + dx);
+        d.ry = Math.max(minRy, dragStart.ry + dy);
+      }
+      // Alt: 回転
+      else if (event.sourceEvent.altKey) {
+        // Calculate angle from ellipse center to mouse
+        const cx = dragStart.x;
+        const cy = dragStart.y;
+        const x0 = dragStart.pointer[0], y0 = dragStart.pointer[1];
+        const x1 = event.x, y1 = event.y;
+        // Angle from center to start
+        const a0 = Math.atan2(y0 - cy, x0 - cx);
+        // Angle from center to current
+        const a1 = Math.atan2(y1 - cy, x1 - cx);
+        // Angle delta in degrees
+        let delta = (a1 - a0) * 180 / Math.PI;
+        d.angle = ((dragStart.angle || 0) + delta) % 360;
+        if (d.angle < 0) d.angle += 360;
+      }
+      // 通常ドラッグ: 移動
+      else {
+        d.x = dragStart.x + event.x - dragStart.pointer[0];
+        d.y = dragStart.y + event.y - dragStart.pointer[1];
+      }
+      // 更新
+      d3.select(this)
+        .attr("transform", `translate(${d.x},${d.y}) rotate(${d.angle || 0})`);
+      // 楕円自体のサイズも反映
+      d3.select(this).select("ellipse")
+        .attr("rx", d.rx)
+        .attr("ry", d.ry);
+      updateLinks();
+      return;
+    }
+    // --- それ以外のノード: 移動のみ ---
     d.x += event.dx;
     d.y += event.dy;
     d3.select(this)
@@ -16,6 +83,9 @@ const drag = d3.drag()
   })
   .on("end", function(event, d) {
     d3.select(this).classed("dragging", false);
+    if (d.type === "ellipse") {
+      delete d._dragStart;
+    }
   });
 
 function updateLinks() {
@@ -84,6 +154,36 @@ async function renderNodes() {
 
     // --- ノード描画 ---
     nodeEnter.each(function(d) {
+      if (d.type === "ellipse") {
+        const g = d3.select(this);
+        g.append("ellipse")
+          .attr("cx", 0)
+          .attr("cy", 0)
+          .attr("rx", d.rx)
+          .attr("ry", d.ry)
+          .attr("fill", d.color ? d3.color(d.color).copy({opacity: 0.1}) : "rgba(255,0,0,0.1)")
+          .attr("stroke", d.color || "#f00")
+          .attr("stroke-width", 2)
+          .attr("stroke-dasharray", d.dashArray || null);
+        // 楕円ノードの回転: <g>にtransform適用（初期角度）
+        d3.select(this)
+          .attr("transform", `translate(${d.x},${d.y}) rotate(${d.angle || 0})`);
+        this.parentNode.insertBefore(this, this.parentNode.firstChild);
+        return; // skip other node drawing branches
+      }
+      if (d.type === "text") {
+        const g = d3.select(this);
+        g.append("text")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("text-anchor", "middle")
+          .style("font-size", "20px")
+          .style("fill", d.color || "#000")
+          .text(d.text);
+        d3.select(this)
+          .attr("transform", `translate(${d.x},${d.y})`);
+        return;
+      }
       const nodeGroup = d3.select(this);
       if (d.Rep == 1) {
         nodeGroup.append("rect")
@@ -138,9 +238,20 @@ async function renderNodes() {
     // --- 更新とイベント処理 ---
     const nodeUpdate = nodeSel.merge(nodeEnter);
 
-    nodeUpdate.attr("transform", d => `translate(${d.x},${d.y})`);
+    nodeUpdate.attr("transform", d =>
+      d.type === "ellipse"
+        ? `translate(${d.x},${d.y}) rotate(${d.angle || 0})`
+        : `translate(${d.x},${d.y})`
+    );
 
     nodeUpdate.on("click", function(event, d) {
+        // Remove existing highlights
+        d3.selectAll(".selected-node").classed("selected-node", false).attr("filter", null);
+        // Mark this node as selected
+        d3.select(this).classed("selected-node", true);
+        // Apply glow effect
+        d3.select(this).attr("filter", "url(#glow)");
+        // Bring to front
         this.parentNode.appendChild(this); 
         event.stopPropagation();
       });
@@ -248,6 +359,159 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   } else {
     console.warn('load-btn が見つかりません。index.html に <button id="load-btn">読込</button> を用意してください。');
+  }
+
+  // === 楕円追加ボタン ===
+  const addEllipseBtn = document.getElementById("add-ellipse-btn");
+  if (addEllipseBtn) {
+    addEllipseBtn.addEventListener("click", async () => {
+      console.log("🟢 楕円追加ボタンが押されました");
+
+      const color = document.getElementById("ellipse-color")?.value || "#888";
+      const lineStyle = document.getElementById("line-style")?.value || "solid";
+      const dashArray = lineStyle === "dashed" ? "6,4" : null;
+
+      // === 現在のズーム状態を考慮して中央に配置 ===
+      const transform = d3.zoomTransform(window.svg.node());
+      const svgWidth = +window.svg.attr("width");
+      const svgHeight = +window.svg.attr("height");
+
+      // 表示中の中央点をSVG座標系に変換
+      const cx = (svgWidth / 2 - transform.x) / transform.k;
+      const cy = (svgHeight / 2 - transform.y) / transform.k;
+
+      const newEllipse = {
+        id: `ellipse_${Date.now()}`,
+        x: cx,
+        y: cy,
+        rx: 120,
+        ry: 80,
+        color: color,
+        dashArray: dashArray,
+        type: "ellipse"
+      };
+
+      if (!window.nodes) window.nodes = [];
+      window.nodes.push(newEllipse);
+
+      console.log("✅ 楕円ノードを追加:", newEllipse);
+
+      await renderNodes();
+    });
+  }
+
+  // === テキスト追加ボタン ===
+  const addTextBtn = document.getElementById("add-text-btn");
+  if (addTextBtn) {
+    addTextBtn.addEventListener("click", async () => {
+      console.log("🟢 テキスト追加ボタンが押されました");
+
+      const textInput = document.getElementById("text-node-input");
+      const textValue = textInput ? textInput.value.trim() : "";
+      if (!textValue) {
+        console.warn("テキストが空です。追加をキャンセルします。");
+        return;
+      }
+
+      const color = document.getElementById("ellipse-color")?.value || "#000";
+
+      // === 現在のズーム状態を考慮して中央に配置 ===
+      const transform = d3.zoomTransform(window.svg.node());
+      const svgWidth = +window.svg.attr("width");
+      const svgHeight = +window.svg.attr("height");
+
+      // 表示中の中央点をSVG座標系に変換
+      const cx = (svgWidth / 2 - transform.x) / transform.k;
+      const cy = (svgHeight / 2 - transform.y) / transform.k;
+
+      const newTextNode = {
+        id: `text_${Date.now()}`,
+        x: cx,
+        y: cy,
+        text: textValue,
+        color: color,
+        type: "text"
+      };
+
+      if (!window.nodes) window.nodes = [];
+      window.nodes.push(newTextNode);
+
+      console.log("✅ テキストノードを追加:", newTextNode);
+
+      await renderNodes();
+    });
+  }
+
+  // === 削除ボタン ===
+  const deleteNodeBtn = document.getElementById("delete-node-btn");
+  if (deleteNodeBtn) {
+    deleteNodeBtn.addEventListener("click", async () => {
+      // Find currently selected node
+      const selected = d3.select(".selected-node").datum && d3.select(".selected-node").datum();
+      if (!selected) {
+        console.warn("削除対象ノードが選択されていません");
+        return;
+      }
+      if (!window.nodes) window.nodes = [];
+      if (!window.deletedNodes) window.deletedNodes = [];
+      // Remove from nodes
+      const idx = window.nodes.findIndex(n => n.id === selected.id);
+      if (idx >= 0) {
+        const [removed] = window.nodes.splice(idx, 1);
+        window.deletedNodes.push(removed);
+        // Remove selection highlight
+        d3.selectAll(".selected-node").classed("selected-node", false).attr("filter", null);
+        await renderNodes();
+        updateLinks();
+      }
+    });
+  }
+
+  // === 復活ボタン ===
+  const restoreNodeBtn = document.getElementById("restore-node-btn");
+  if (restoreNodeBtn) {
+    restoreNodeBtn.addEventListener("click", async () => {
+      if (!window.deletedNodes || window.deletedNodes.length === 0) {
+        console.warn("復活できるノードがありません");
+        return;
+      }
+      if (!window.nodes) window.nodes = [];
+      const restored = window.deletedNodes.pop();
+      window.nodes.push(restored);
+      await renderNodes();
+      updateLinks();
+    });
+  }
+
+  // === 最背面ボタン ===
+  const sendToBackBtn = document.getElementById("send-to-back-btn");
+  if (sendToBackBtn) {
+    sendToBackBtn.addEventListener("click", () => {
+      const group = d3.select(".selected-node");
+      const nodeEl = group.node();
+      if (!nodeEl) {
+        console.warn("最背面に送るノードが選択されていません");
+        return;
+      }
+      // 1) DOM上で最背面へ移動（視覚的に背面）
+      const parent = nodeEl.parentNode;
+      if (parent && parent.firstChild) {
+        parent.insertBefore(nodeEl, parent.firstChild);
+      }
+
+      // 2) データ順も先頭に（今後のrenderでも背面になるように）
+      const d = group.datum();
+      if (d && Array.isArray(window.nodes)) {
+        const idx = window.nodes.findIndex(n => n.id === d.id);
+        if (idx >= 0) {
+          const [moved] = window.nodes.splice(idx, 1);
+          window.nodes.unshift(moved);
+        }
+      }
+
+      // リンクだけ更新（再描画はしない：DOM順を保持するため）
+      updateLinks();
+    });
   }
 
   // 起動時に一覧を取得
