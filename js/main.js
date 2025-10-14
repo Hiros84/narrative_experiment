@@ -177,7 +177,7 @@ async function renderNodes() {
           .attr("x", 0)
           .attr("y", 0)
           .attr("text-anchor", "middle")
-          .style("font-size", "20px")
+          .style("font-size", (d.fontSize ? d.fontSize : 20) + "px")
           .style("fill", d.color || "#000")
           .text(d.text);
         d3.select(this)
@@ -256,6 +256,75 @@ async function renderNodes() {
         event.stopPropagation();
       });
 
+    // --- テキストノードのダブルクリック編集（フォントサイズも編集可能） ---
+    nodeUpdate.on("dblclick", function(event, d) {
+      if (d.type === "text") {
+        event.stopPropagation();
+        const newText = prompt("テキストを編集:", d.text || "");
+        if (newText !== null && newText.trim() !== "") {
+          d.text = newText.trim();
+          const newFontSize = prompt("フォントサイズを入力（例: 16）:", d.fontSize || 20);
+          if (newFontSize !== null && !isNaN(newFontSize)) {
+            d.fontSize = parseFloat(newFontSize);
+          }
+          const textEl = d3.select(this).select("text");
+          textEl.text(d.text);
+          textEl.style("font-size", (d.fontSize ? d.fontSize : 20) + "px");
+        }
+      }
+    });
+
+    // --- ツールチップ: ノード hover で表示 ---
+    nodeUpdate.on("mouseover", function(event, d) {
+      // 条件: プロダクトノード（Rep==1 または iconあり）
+      if (d.Rep == 1 || d.icon) {
+        let tooltip = document.getElementById("node-tooltip");
+        if (!tooltip) {
+          tooltip = document.createElement("div");
+          tooltip.id = "node-tooltip";
+          tooltip.style.position = "absolute";
+          tooltip.style.background = "#fff";
+          tooltip.style.border = "1px solid #ccc";
+          tooltip.style.padding = "8px";
+          tooltip.style.borderRadius = "6px";
+          tooltip.style.boxShadow = "0 2px 12px rgba(0,0,0,0.13)";
+          tooltip.style.pointerEvents = "none";
+          tooltip.style.zIndex = "9999";
+          document.body.appendChild(tooltip);
+        }
+        // 画像部分
+        let imgHtml = "";
+        if (d.icon) {
+          imgHtml = `<img src="${d.icon}" alt="" style="width:100px;display:block;margin:auto;">`;
+        }
+        // テキスト部分
+        let label = d.id || d.name || "";
+        // クラスター番号（小さくグレーで）
+        let clusterHtml = '';
+        if (typeof d.cluster !== "undefined") {
+          clusterHtml = `<div style="font-size:12px; color:#666; margin-top:2px;">Cluster: ${d.cluster}</div>`;
+        }
+        tooltip.innerHTML = `${imgHtml}<div style="text-align:center;margin-top:6px;font-size:14px;">${label}</div>${clusterHtml}`;
+        // 表示位置
+        tooltip.style.display = "block";
+        // 画面端で切れないように少しオフセット
+        const offsetX = 16, offsetY = 16;
+        let left = event.pageX + offsetX;
+        let top = event.pageY + offsetY;
+        // 右端・下端で切れないように調整
+        const maxRight = window.innerWidth - 140;
+        const maxBottom = window.innerHeight - 120;
+        if (left > maxRight) left = maxRight;
+        if (top > maxBottom) top = maxBottom;
+        tooltip.style.left = left + "px";
+        tooltip.style.top = top + "px";
+      }
+    });
+    nodeUpdate.on("mouseout", function(event, d) {
+      const tooltip = document.getElementById("node-tooltip");
+      if (tooltip) tooltip.style.display = "none";
+    });
+
     // --- 不要なノードを削除 ---
     nodeSel.exit().remove();
 
@@ -304,9 +373,25 @@ async function loadSelectedJson() {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
 
-    // data の形が {nodes,links} または {graph:{nodes,links}} のどちらにも対応
-    const nodes = Array.isArray(data.nodes) ? data.nodes : (data.graph && Array.isArray(data.graph.nodes) ? data.graph.nodes : []);
-    const links = Array.isArray(data.links) ? data.links : (data.graph && Array.isArray(data.graph.links) ? data.graph.links : []);
+    // --- JSONフォーマットの自動判別とパース ---
+    let nodes = [];
+    let links = [];
+
+    if (Array.isArray(data.nodes) && Array.isArray(data.links)) {
+      // 新形式または単純形式
+      nodes = data.nodes;
+      links = data.links;
+    } else if (data.graph && Array.isArray(data.graph.nodes)) {
+      // 旧形式: data.graph 配下に格納されている
+      nodes = data.graph.nodes;
+      links = data.graph.links || [];
+    } else if (data.data && Array.isArray(data.data.nodes)) {
+      // さらに古い可能性: data.data 配下
+      nodes = data.data.nodes;
+      links = data.data.links || [];
+    } else {
+      console.warn("⚠️ JSON形式が認識できません。空のデータとして読み込みます。");
+    }
 
     window.nodes = nodes || [];
     window.links = links || [];
@@ -511,6 +596,73 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // リンクだけ更新（再描画はしない：DOM順を保持するため）
       updateLinks();
+    });
+  }
+
+  // === 保存ボタン ===
+  const saveBtn = document.getElementById("save-btn");
+  if (saveBtn) {
+    saveBtn.addEventListener("click", async () => {
+      try {
+        if (!window.nodes) {
+          console.warn("保存するノードがありません");
+          return;
+        }
+
+        // 入力されたファイル名を取得
+        const filenameInput = document.getElementById("filename-save");
+        const filename = filenameInput ? filenameInput.value.trim() : "";
+        if (!filename) {
+          alert("保存ファイル名を入力してください。");
+          return;
+        }
+
+        // ノード全体をJSON化
+        const saveData = {
+          filename: filename,  // 追加: ファイル名を送信
+          nodes: window.nodes.map(n => {
+            const obj = {
+              id: n.id,
+              type: n.type || "node",
+              x: n.x,
+              y: n.y,
+              Rep: n.Rep,
+              cluster: n.cluster,
+              color: n.color,
+              dashArray: n.dashArray,
+              rx: n.rx,
+              ry: n.ry,
+              angle: n.angle,
+              text: n.text,
+              icon: n.icon || null, // ← 追加：画像パスも保存
+            };
+            if (n.type === "text") {
+              obj.fontSize = n.fontSize;
+            }
+            return obj;
+          }),
+          links: window.links || []
+        };
+
+        console.log("💾 保存データ:", saveData);
+
+        const res = await fetch("/api/save", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(saveData)
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          alert(`✅ 保存完了: ${result.filename}`);
+        } else {
+          console.error("保存に失敗しました:", res.status);
+          alert("保存に失敗しました");
+        }
+      } catch (e) {
+        console.error("保存中にエラー:", e);
+        alert("保存中にエラーが発生しました");
+      }
     });
   }
 

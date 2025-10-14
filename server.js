@@ -38,36 +38,31 @@ app.get('/api/images', (req, res) => {
 
 // JSON保存用APIエンドポイント
 app.post('/api/save', (req, res) => {
-  const { filename, graph } = req.body;
-
   console.log("=== POST /api/save 受信 ===");
   console.log(JSON.stringify(req.body, null, 2));
 
-  // ✅ まず graph 自体があるかどうかをチェック！
-  if (!graph || typeof graph !== 'object') {
-    return res.status(400).json({ error: 'graph データが存在しません' });
+  const { filename, nodes, links } = req.body;
+
+  if (!filename || typeof filename !== 'string' || filename.trim() === '') {
+    return res.status(400).json({ error: '保存ファイル名が指定されていません' });
   }
 
-  const { nodes, links } = graph;
-
-  // ✅ nodes, links の妥当性をチェック
   if (!Array.isArray(nodes) || !Array.isArray(links)) {
-    return res.status(400).json({ error: '保存するノードまたはリンクデータがありません' });
+    return res.status(400).json({ error: '保存データの形式が不正です（nodes または links が存在しません）' });
   }
 
-  if (typeof filename !== 'string' || filename.trim() === '') {
-    return res.status(400).json({ error: 'ファイル名が指定されていません' });
+  // ファイル名に拡張子を付加
+  const safeFilename = filename.endsWith('.json') ? filename : `${filename}.json`;
+  const filepath = path.join(__dirname, './data', safeFilename);
+
+  try {
+    fs.writeFileSync(filepath, JSON.stringify({ nodes, links }, null, 2), 'utf8');
+    console.log(`✅ 保存成功: ${filepath}`);
+    res.json({ message: '保存が完了しました', filename: safeFilename });
+  } catch (err) {
+    console.error('ファイル保存エラー:', err);
+    res.status(500).json({ error: 'ファイルの保存に失敗しました' });
   }
-
-  const filepath = path.join(dataDir, filename.endsWith('.json') ? filename : filename + '.json');
-
-  fs.writeFile(filepath, JSON.stringify({ nodes, links }, null, 2), 'utf8', err => {
-    if (err) {
-      console.error('ファイル保存エラー:', err);
-      return res.status(500).json({ error: '保存に失敗しました' });
-    }
-    res.json({ message: '保存が完了しました', path: filepath });
-  });
 });
 
 // JSONファイル読み込みAPIエンドポイント
