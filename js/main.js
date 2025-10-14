@@ -644,6 +644,61 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // === 選択解除ボタン ===
+  const deselectNodeBtn = document.getElementById("deselect-node-btn");
+  if (deselectNodeBtn) {
+    deselectNodeBtn.addEventListener("click", () => {
+      // 1. 現在選択状態のノードがあれば、クラスとfilter属性を解除
+      d3.selectAll(".selected-node").classed("selected-node", false).attr("filter", null);
+      // 2. グローバル変数をnullに戻す
+      window.activeNode = null;
+      // 3. コンソールに出力
+      console.log("選択解除しました");
+    });
+  }
+
+   // === PDF出力ボタン ===
+  const pdfSaveBtn = document.getElementById("pdf-save-btn");
+  if (pdfSaveBtn) {
+    pdfSaveBtn.addEventListener("click", async () => {
+      const nameInput = document.getElementById("pdf-filename-save");
+      const filename = (nameInput && nameInput.value.trim()) ? nameInput.value.trim() : "export";
+      const svgElement = document.querySelector("#mysvg");
+      if (!svgElement) {
+        console.warn("SVG要素 (#mysvg) が見つかりません");
+        return;
+      }
+
+      const serializer = new XMLSerializer();
+      let source = serializer.serializeToString(svgElement);
+      if (!source.match(/^<svg[^>]+xmlns=/)) {
+        source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+      }
+      if (!source.match(/^<svg[^>]+xmlns:xlink=/)) {
+        source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+      }
+
+      try {
+        const res = await fetch("/api/export-pdf", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename, svg: source })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          alert(`✅ PDF出力完了: ${data.filepath || filename + ".pdf"}`);
+          console.log("PDF出力成功:", data);
+        } else {
+          console.error("PDF出力エラー:", res.status);
+          alert("PDF出力に失敗しました");
+        }
+      } catch (e) {
+        console.error("PDF出力処理中にエラー:", e);
+        alert("PDF出力処理中にエラーが発生しました");
+      }
+    });
+  }
+
   // === 保存ボタン ===
   const saveBtn = document.getElementById("save-btn");
   if (saveBtn) {

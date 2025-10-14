@@ -134,6 +134,36 @@ app.get('/api/load/:filename', (req, res) => {
   });
 });
 
+// === PDF出力エンドポイント ===
+const { exec } = require('child_process');
+
+app.post('/api/export-pdf', express.json({ limit: '10mb' }), (req, res) => {
+  const { filename, svg } = req.body;
+  if (!svg || !filename) {
+    return res.status(400).json({ error: 'SVGデータまたはファイル名が不足しています。' });
+  }
+
+  const exportDir = path.join(__dirname, 'exports');
+  if (!fs.existsSync(exportDir)) fs.mkdirSync(exportDir);
+
+  const svgPath = path.join(exportDir, `${filename}.svg`);
+  const pdfPath = path.join(exportDir, `${filename}.pdf`);
+
+  fs.writeFileSync(svgPath, svg, 'utf8');
+
+  const cmd = `npx svgexport "${svgPath}" "${pdfPath}"`;
+  console.log('実行コマンド:', cmd);
+
+  exec(cmd, (error, stdout, stderr) => {
+    if (error) {
+      console.error('svgexport エラー:', stderr || error.message);
+      return res.status(500).json({ error: 'PDF変換に失敗しました', details: stderr || error.message });
+    }
+    console.log('✅ PDF出力成功:', pdfPath);
+    res.json({ message: 'PDF出力成功', filepath: pdfPath });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
