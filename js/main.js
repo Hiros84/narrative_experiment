@@ -10,6 +10,15 @@ const feMerge = filter.append("feMerge");
 feMerge.append("feMergeNode").attr("in", "coloredBlur");
 feMerge.append("feMergeNode").attr("in", "SourceGraphic");
 
+// === D3 Zoom 設定: transformをg.viewportに適用 ===
+const zoom = d3.zoom().on("zoom", (event) => {
+    svg.select("g.viewport").attr("transform", event.transform);
+});
+svg.call(zoom);
+
+// グローバル: アクティブなノード（リンク作成用）
+window.activeNode = null;
+
 // D3のドラッグ動作を定義（楕円ノード用: 移動・リサイズ・回転対応）
 const drag = d3.drag()
   .on("start", function(event, d) {
@@ -92,29 +101,48 @@ function updateLinks() {
   const linkLayer = d3.select("g.link-layer");
   if (!window.links || !window.nodes) return;
 
-  // source, target をノードオブジェクトに変換
+  // Build node lookup by id
   const nodeById = new Map(window.nodes.map(d => [d.id, d]));
-  const links = window.links.map(d => ({
+  // Map links to have source/target as node objects, and keep index for removal
+  const links = window.links.map((d, i) => ({
+    __linkIndex: i,
     source: typeof d.source === "object" ? d.source : nodeById.get(d.source),
     target: typeof d.target === "object" ? d.target : nodeById.get(d.target)
   })).filter(d => d.source && d.target);
 
-  const linkSel = linkLayer.selectAll("line").data(links);
+  // Key by source-target-index so that duplicate links are handled
+  const linkSel = linkLayer.selectAll("line").data(links, d => d.source.id + "-" + d.target.id + "-" + d.__linkIndex);
 
+  // ENTER
   linkSel.enter()
     .append("line")
-    .attr("stroke", "#aaa")
-    .attr("stroke-width", 1)
+    .attr("stroke", "red")
+    .attr("stroke-width", 2)
+    .on("click", function(event, d) {
+      // Remove link from window.links by index
+      if (typeof d.__linkIndex === "number") {
+        window.links.splice(d.__linkIndex, 1);
+        updateLinks();
+      }
+      event.stopPropagation();
+    })
+    .on("mouseover", function(event, d) {
+      d3.select(this).attr("stroke", "#f66").attr("stroke-width", 3);
+    })
+    .on("mouseout", function(event, d) {
+      d3.select(this).attr("stroke", "red").attr("stroke-width", 2);
+    })
     .merge(linkSel)
     .attr("x1", d => d.source.x)
     .attr("y1", d => d.source.y)
     .attr("x2", d => d.target.x)
-    .attr("y2", d => d.target.y);
+    .attr("y2", d => d.target.y)
+    .style("pointer-events", "auto");
 
   linkSel.exit().remove();
 
-  // 追加: リンクがクリックを妨げないように pointer-events を無効化
-  linkLayer.selectAll('line').style('pointer-events', 'none');
+  // Ensure links are always beneath nodes
+  linkLayer.lower();
 }
 
 // ▼▼▼ この関数を丸ごと置き換えてください ▼▼▼
@@ -245,16 +273,33 @@ async function renderNodes() {
     );
 
     nodeUpdate.on("click", function(event, d) {
-        // Remove existing highlights
+      // --- LINK作成機能 ---
+      // 1. すでにリンク作成モード中か？
+      if (window.activeNode == null) {
+        // Remove all previous highlights
         d3.selectAll(".selected-node").classed("selected-node", false).attr("filter", null);
-        // Mark this node as selected
-        d3.select(this).classed("selected-node", true);
-        // Apply glow effect
-        d3.select(this).attr("filter", "url(#glow)");
+        // Set as activeNode
+        window.activeNode = d;
+        d3.select(this).classed("selected-node", true).attr("filter", "url(#glow)");
         // Bring to front
-        this.parentNode.appendChild(this); 
-        event.stopPropagation();
-      });
+        this.parentNode.appendChild(this);
+      } else if (window.activeNode && window.activeNode.id !== d.id) {
+        // 2. 別ノードが既に選択されている → リンク作成
+        // Remove highlight from previous
+        d3.selectAll(".selected-node").classed("selected-node", false).attr("filter", null);
+        // Add link
+        if (!window.links) window.links = [];
+        window.links.push({ source: window.activeNode.id, target: d.id });
+        console.log("リンク作成:", window.links);
+        window.activeNode = null;
+        updateLinks();
+      } else if (window.activeNode && window.activeNode.id === d.id) {
+        // クリックしたノードが同じ場合はキャンセル
+        d3.select(this).classed("selected-node", false).attr("filter", null);
+        window.activeNode = null;
+      }
+      // event.stopPropagation(); // Removed as per instructions
+    });
 
     // --- テキストノードのダブルクリック編集（フォントサイズも編集可能） ---
     nodeUpdate.on("dblclick", function(event, d) {
