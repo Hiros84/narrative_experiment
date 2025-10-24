@@ -239,11 +239,19 @@ async function renderNodes() {
           .style("fill", "#333")
           .text(d.id);
       } else {
-        nodeGroup.append("circle")
-          .attr("r", 10)
-          .attr("fill", colorScale(d.cluster))
-          .attr("stroke", "#fff")
-          .attr("stroke-width", 1.5);
+        // === 一時的に点の代わりに品番名を表示 ===
+        // nodeGroup.append("circle")
+        //   .attr("r", 10)
+        //   .attr("fill", colorScale(d.cluster))
+        //   .attr("stroke", "#fff")
+        //   .attr("stroke-width", 1.5);
+        nodeGroup.append("text")
+          .attr("text-anchor", "middle")
+          .attr("alignment-baseline", "middle")
+          .style("font-size", "20px")
+          .style("font-weight", "bold")
+          .style("fill", colorScale(d.cluster))
+          .text(d.id || "");
       }
     });
 
