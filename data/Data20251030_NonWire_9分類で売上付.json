@@ -1,0 +1,865 @@
+{
+  "nodes": [
+    {
+      "id": "BT09501",
+      "icon": "images/BT09501.jpg",
+      "x": 0.0,
+      "y": -596.96651,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "FIT"
+    },
+    {
+      "id": "BT09503",
+      "icon": "images/BT09503.jpg",
+      "x": 0.0,
+      "y": -596.96651,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "FIT"
+    },
+    {
+      "id": "CA525301",
+      "icon": "images/CA525301.jpg",
+      "x": 814.3599,
+      "y": -302.0030872,
+      "Rep": 1,
+      "cluster": 6,
+      "IniSpeed1": 585,
+      "Brand": "NY"
+    },
+    {
+      "id": "CA525104",
+      "icon": "images/CA525104.jpg",
+      "x": 814.3599,
+      "y": -302.0030872,
+      "Rep": 0,
+      "cluster": 6,
+      "IniSpeed1": 522,
+      "Brand": "NY"
+    },
+    {
+      "id": "CA526101",
+      "icon": "images/CA526101.jpg",
+      "x": 640.11014,
+      "y": -191.5131692,
+      "Rep": 0,
+      "cluster": 6,
+      "IniSpeed1": 0,
+      "Brand": "NY"
+    },
+    {
+      "id": "CA126106",
+      "icon": "images/CA126106.jpg",
+      "x": 1470.0937999999999,
+      "y": -360.11654519999996,
+      "Rep": 0,
+      "cluster": 8,
+      "IniSpeed1": 0,
+      "Brand": "NY"
+    },
+    {
+      "id": "CA126115",
+      "icon": "images/CA126115.jpg",
+      "x": 1470.0937999999999,
+      "y": -360.11654519999996,
+      "Rep": 0,
+      "cluster": 8,
+      "IniSpeed1": 0,
+      "Brand": "NY"
+    },
+    {
+      "id": "DB12417【仮】",
+      "icon": "images/DB12417【仮】.jpg",
+      "x": 1948.4452,
+      "y": -560.8259312,
+      "Rep": 0,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB12420【仮】",
+      "icon": "images/DB12420【仮】.jpg",
+      "x": 1948.4452,
+      "y": -560.8259312,
+      "Rep": 0,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB124201",
+      "icon": "images/DB124201.jpg",
+      "x": 1068.731,
+      "y": -678.801852,
+      "Rep": 0,
+      "cluster": 1,
+      "IniSpeed1": 2,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB124202",
+      "icon": "images/DB124202.jpg",
+      "x": 1068.731,
+      "y": -678.801852,
+      "Rep": 0,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB12422【仮】",
+      "icon": "images/DB12422【仮】.jpg",
+      "x": 1068.731,
+      "y": -678.801852,
+      "Rep": 1,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB12424【仮】",
+      "icon": "images/DB12424【仮】.jpg",
+      "x": 1068.731,
+      "y": -678.801852,
+      "Rep": 0,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB124302",
+      "icon": "images/DB124302.jpg",
+      "x": 1369.7548,
+      "y": -544.6541636000001,
+      "Rep": 0,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB125101",
+      "icon": "images/DB125101.jpg",
+      "x": 1387.28046,
+      "y": -947.041788,
+      "Rep": 1,
+      "cluster": 3,
+      "IniSpeed1": 5,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB125102",
+      "icon": "images/DB125102.jpg",
+      "x": 1387.28046,
+      "y": -947.041788,
+      "Rep": 1,
+      "cluster": 3,
+      "IniSpeed1": 13,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB125103",
+      "icon": "images/DB125103.jpg",
+      "x": 1387.28046,
+      "y": -947.041788,
+      "Rep": 1,
+      "cluster": 3,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB125202",
+      "icon": "images/DB125202.jpg",
+      "x": 1068.731,
+      "y": -678.801852,
+      "Rep": 1,
+      "cluster": 1,
+      "IniSpeed1": 3,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB125203",
+      "icon": "images/DB125203.jpg",
+      "x": 1068.731,
+      "y": -678.801852,
+      "Rep": 1,
+      "cluster": 1,
+      "IniSpeed1": 4,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB125401",
+      "icon": "images/DB125401.jpg",
+      "x": 1387.28046,
+      "y": -947.041788,
+      "Rep": 0,
+      "cluster": 3,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB524201",
+      "icon": "images/DB524201.jpg",
+      "x": 1297.7126,
+      "y": -1197.6250280000002,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB524203",
+      "icon": "images/DB524203.jpg",
+      "x": 718.2000800000001,
+      "y": -1021.552536,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525101",
+      "icon": "images/DB525101.jpg",
+      "x": 1369.7548,
+      "y": -544.6541636000001,
+      "Rep": 0,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525102",
+      "icon": "images/DB525102.jpg",
+      "x": 1387.28046,
+      "y": -947.041788,
+      "Rep": 0,
+      "cluster": 3,
+      "IniSpeed1": 8,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525103",
+      "icon": "images/DB525103.jpg",
+      "x": 1387.28046,
+      "y": -947.041788,
+      "Rep": 0,
+      "cluster": 3,
+      "IniSpeed1": 5,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525104",
+      "icon": "images/DB525104.jpg",
+      "x": 1387.28046,
+      "y": -947.041788,
+      "Rep": 0,
+      "cluster": 3,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525202",
+      "icon": "images/DB525202.jpg",
+      "x": 1297.7126,
+      "y": -1197.6250280000002,
+      "Rep": 0,
+      "cluster": 3,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525204",
+      "icon": "images/DB525204.jpg",
+      "x": 718.2000800000001,
+      "y": -1021.552536,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525207",
+      "icon": "images/DB525207.jpg",
+      "x": 1009.2482,
+      "y": -935.5873724,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525301",
+      "icon": "images/DB525301.jpg",
+      "x": 579.6272,
+      "y": -567.797634,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525404",
+      "icon": "images/DB525404.jpg",
+      "x": 1387.28046,
+      "y": -947.041788,
+      "Rep": 0,
+      "cluster": 3,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "DB525406",
+      "icon": "images/DB525406.jpg",
+      "x": 1673.7316,
+      "y": -513.3386363999999,
+      "Rep": 1,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "PEACE"
+    },
+    {
+      "id": "ME06601",
+      "icon": "images/ME06601.jpg",
+      "x": 1774.75488,
+      "y": -64.1809104,
+      "Rep": 0,
+      "cluster": 5,
+      "IniSpeed1": 0,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME08503",
+      "icon": "images/ME08503.jpg",
+      "x": 842.5312,
+      "y": -1412.2525560000001,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 0,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME09502",
+      "icon": "images/ME09502.jpg",
+      "x": 1774.75488,
+      "y": -64.1809104,
+      "Rep": 0,
+      "cluster": 5,
+      "IniSpeed1": 0,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME118307",
+      "icon": "images/ME118307.jpg",
+      "x": 1836.3516,
+      "y": -899.462008,
+      "Rep": 1,
+      "cluster": 7,
+      "IniSpeed1": 477,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME122105",
+      "icon": "images/ME122105.jpg",
+      "x": 1900.3763199999999,
+      "y": -325.9690084,
+      "Rep": 1,
+      "cluster": 5,
+      "IniSpeed1": 6693,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME123102",
+      "icon": "images/ME123102.jpg",
+      "x": 1428.93588,
+      "y": -190.8421224,
+      "Rep": 1,
+      "cluster": 8,
+      "IniSpeed1": 2950,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME123103",
+      "icon": "images/ME123103.jpg",
+      "x": 2000.0,
+      "y": -190.720422,
+      "Rep": 0,
+      "cluster": 5,
+      "IniSpeed1": 1771,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME124103",
+      "icon": "images/ME124103.jpg",
+      "x": 1774.75488,
+      "y": -64.1809104,
+      "Rep": 0,
+      "cluster": 5,
+      "IniSpeed1": 263,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME124301",
+      "icon": "images/ME124301.jpg",
+      "x": 1501.4734,
+      "y": -0.0,
+      "Rep": 0,
+      "cluster": 5,
+      "IniSpeed1": 420,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME124302",
+      "icon": "images/ME124302.jpg",
+      "x": 1387.28046,
+      "y": -947.041788,
+      "Rep": 0,
+      "cluster": 3,
+      "IniSpeed1": 447,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME124303",
+      "icon": "images/ME124303.jpg",
+      "x": 1836.3516,
+      "y": -899.462008,
+      "Rep": 0,
+      "cluster": 7,
+      "IniSpeed1": 1194,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME124304",
+      "icon": "images/ME124304.jpg",
+      "x": 914.8532,
+      "y": -1186.8495328000001,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 3508,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME125101",
+      "icon": "images/ME125101.jpg",
+      "x": 1704.8034599999999,
+      "y": -360.7800884,
+      "Rep": 0,
+      "cluster": 8,
+      "IniSpeed1": 896,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME125102",
+      "icon": "images/ME125102.jpg",
+      "x": 1836.3516,
+      "y": -899.462008,
+      "Rep": 0,
+      "cluster": 7,
+      "IniSpeed1": 808,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME125301",
+      "icon": "images/ME125301.jpg",
+      "x": 1085.7386,
+      "y": -36.707973800000005,
+      "Rep": 1,
+      "cluster": 7,
+      "IniSpeed1": 1609,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME125302",
+      "icon": "images/ME125302.jpg",
+      "x": 1816.2731999999999,
+      "y": -1182.076888,
+      "Rep": 0,
+      "cluster": 6,
+      "IniSpeed1": 1302,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME125303",
+      "icon": "images/ME125303.jpg",
+      "x": 914.8532,
+      "y": -1186.8495328000001,
+      "Rep": 1,
+      "cluster": 0,
+      "IniSpeed1": 0,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME126101",
+      "icon": "images/ME126101.jpg",
+      "x": 989.49736,
+      "y": -1480.0,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 0,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME126103",
+      "icon": "images/ME126103.jpg",
+      "x": 60.569704,
+      "y": -305.42301199999997,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME126104",
+      "icon": "images/ME126104.jpg",
+      "x": 290.21382,
+      "y": -247.6576204,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME518306",
+      "icon": "images/ME518306.jpg",
+      "x": 1836.3516,
+      "y": -899.462008,
+      "Rep": 0,
+      "cluster": 7,
+      "IniSpeed1": 253,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME522301",
+      "icon": "images/ME522301.jpg",
+      "x": 2000.0,
+      "y": -190.720422,
+      "Rep": 0,
+      "cluster": 5,
+      "IniSpeed1": 1544,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME524301",
+      "icon": "images/ME524301.jpg",
+      "x": 1501.4734,
+      "y": -0.0,
+      "Rep": 0,
+      "cluster": 5,
+      "IniSpeed1": 356,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME524302",
+      "icon": "images/ME524302.jpg",
+      "x": 1208.944,
+      "y": -327.77375,
+      "Rep": 0,
+      "cluster": 6,
+      "IniSpeed1": 692,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME525101",
+      "icon": "images/ME525101.jpg",
+      "x": 274.24968,
+      "y": -462.262164,
+      "Rep": 1,
+      "cluster": 2,
+      "IniSpeed1": 2909,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME525301",
+      "icon": "images/ME525301.jpg",
+      "x": 1085.7386,
+      "y": -36.707973800000005,
+      "Rep": 0,
+      "cluster": 7,
+      "IniSpeed1": 539,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME525303",
+      "icon": "images/ME525303.jpg",
+      "x": 1208.944,
+      "y": -327.77375,
+      "Rep": 0,
+      "cluster": 6,
+      "IniSpeed1": 0,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME525304",
+      "icon": "images/ME525304.jpg",
+      "x": 325.16462,
+      "y": -1325.511384,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 52,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME525305",
+      "icon": "images/ME525305.jpg",
+      "x": 274.24968,
+      "y": -462.262164,
+      "Rep": 1,
+      "cluster": 2,
+      "IniSpeed1": 261,
+      "Brand": "Me"
+    },
+    {
+      "id": "ME526101",
+      "icon": "images/ME526101.jpg",
+      "x": 274.24968,
+      "y": -462.262164,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "Me"
+    },
+    {
+      "id": "MG02503",
+      "icon": "images/MG02503.jpg",
+      "x": 274.24968,
+      "y": -462.262164,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG07501",
+      "icon": "images/MG07501.jpg",
+      "x": 1231.7014,
+      "y": -1440.9253952,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG07502",
+      "icon": "images/MG07502.jpg",
+      "x": 274.24968,
+      "y": -462.262164,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG07504",
+      "icon": "images/MG07504.jpg",
+      "x": 660.804,
+      "y": -1196.103144,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG07505",
+      "icon": "images/MG07505.jpg",
+      "x": 274.24968,
+      "y": -462.262164,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG122201",
+      "icon": "images/MG122201.jpg",
+      "x": 1680.94968,
+      "y": -699.0739447999999,
+      "Rep": 1,
+      "cluster": 7,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG124301",
+      "icon": "images/MG124301.jpg",
+      "x": 1102.3636000000001,
+      "y": -1291.2879232,
+      "Rep": 0,
+      "cluster": 0,
+      "IniSpeed1": 31,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG125201",
+      "icon": "images/MG125201.jpg",
+      "x": 1029.8904,
+      "y": -439.10241360000003,
+      "Rep": 0,
+      "cluster": 6,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG125301",
+      "icon": "images/MG125301.jpg",
+      "x": 1680.94968,
+      "y": -699.0739447999999,
+      "Rep": 0,
+      "cluster": 7,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG523101",
+      "icon": "images/MG523101.jpg",
+      "x": 579.6272,
+      "y": -567.797634,
+      "Rep": 1,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG525401",
+      "icon": "images/MG525401.jpg",
+      "x": 807.14488,
+      "y": -804.3669759999999,
+      "Rep": 0,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG525402",
+      "icon": "images/MG525402.jpg",
+      "x": 604.23244,
+      "y": -777.9089271999999,
+      "Rep": 0,
+      "cluster": 1,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG525403",
+      "icon": "images/MG525403.jpg",
+      "x": 325.16462,
+      "y": -1325.511384,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "MG525404",
+      "icon": "images/MG525404.jpg",
+      "x": 325.16462,
+      "y": -1325.511384,
+      "Rep": 0,
+      "cluster": 2,
+      "IniSpeed1": 0,
+      "Brand": "MAGIC"
+    },
+    {
+      "id": "YH09501",
+      "icon": "images/YH09501.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 0,
+      "cluster": 4,
+      "IniSpeed1": 0,
+      "Brand": "Yukine. Inc."
+    },
+    {
+      "id": "YH124201",
+      "icon": "images/YH124201.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 0,
+      "cluster": 4,
+      "IniSpeed1": 0,
+      "Brand": "Yukine. Inc."
+    },
+    {
+      "id": "YH124301",
+      "icon": "images/YH124301.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 0,
+      "cluster": 4,
+      "IniSpeed1": 0,
+      "Brand": "Yukine. Inc."
+    },
+    {
+      "id": "YH125201",
+      "icon": "images/YH125201.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 0,
+      "cluster": 4,
+      "IniSpeed1": 0,
+      "Brand": "Yukine. Inc."
+    },
+    {
+      "id": "YH125401",
+      "icon": "images/YH125401.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 0,
+      "cluster": 4,
+      "IniSpeed1": 0,
+      "Brand": "Yukine. Inc."
+    },
+    {
+      "id": "YH524101",
+      "icon": "images/YH524101.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 0,
+      "cluster": 4,
+      "IniSpeed1": 10,
+      "Brand": "Yukine. Inc."
+    },
+    {
+      "id": "YH524301",
+      "icon": "images/YH524301.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 0,
+      "cluster": 4,
+      "IniSpeed1": 0,
+      "Brand": "Yukine. Inc."
+    },
+    {
+      "id": "YH525101",
+      "icon": "images/YH525101.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 1,
+      "cluster": 4,
+      "IniSpeed1": 0,
+      "Brand": "Yukine. Inc."
+    },
+    {
+      "id": "YH525301",
+      "icon": "images/YH525301.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 1,
+      "cluster": 4,
+      "IniSpeed1": 0,
+      "Brand": "Yukine. Inc."
+    },
+    {
+      "id": "YH525401",
+      "icon": "images/YH525401.jpg",
+      "x": 272.59928,
+      "y": -980.004496,
+      "Rep": 0,
+      "cluster": 4,
+      "IniSpeed1": 0,
+      "Brand": "Yukine. Inc."
+    }
+  ],
+  "links": []
+}

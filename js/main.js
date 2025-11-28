@@ -145,7 +145,7 @@ function updateLinks() {
   linkLayer.lower();
 }
 
-// ▼▼▼ この関数を丸ごと置き換えてください ▼▼▼
+// ▼▼▼ 
 async function renderNodes() {
   try {
     console.log("=== renderNodes 開始 ===");
@@ -213,7 +213,10 @@ async function renderNodes() {
         return;
       }
       const nodeGroup = d3.select(this);
-      if (d.Rep == 1) {
+      d.Rep = 9;    //強引に代表画像を書かないようにしている。
+      //d.Rep = 1; //強制的に代表画像を書く
+      // === 以下は変えずに上の二行で代表画像を書くかどうかを指定している
+      if (d.Rep == 1) {   //Rep=1だった場合のみ代表画像を書く
         nodeGroup.append("rect")
           .attr("x", -50)
           .attr("y", -50)
@@ -239,19 +242,52 @@ async function renderNodes() {
           .style("fill", "#333")
           .text(d.id);
       } else {
-        // === 一時的に点の代わりに品番名を表示 ===
-        // nodeGroup.append("circle")
+        // === 売上初速 IniSpeed1 によって点の大きさを変えて表示 ===
+        if ( d.IsInStore === 1){  //店舗展開ありならば枚数に応じた円を描く
+          nodeGroup.append("circle")
+            .attr("r", d => {
+              // JSON の値 IniSpeed1 を数値化（欠損や非数値に備える）
+              const val = parseFloat(d.IniSpeed1);
+              // スケールを調整（例: InSpeed1=0〜100 → 半径 5〜30）
+              if (!isFinite(val)) return 5; // 欠損時のデフォルト
+              return 10 + (val /40); // スケール係数は好みで調整
+            })
+            .attr("fill", colorScale(d.cluster))
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 1.5); 
+        }
+        //
+        // === 以下は店舗展開がある(d.IsInStore===1)なら品番を表示し、そうで無ければ点を打つ
+        //if ( d.IsInStore === 1){
+        //  nodeGroup.append("text")
+        //    .attr("text-anchor", "middle")
+        //     .attr("alignment-baseline", "middle")
+        //     .style("font-size", "20px")
+        //     .style("font-weight", "bold")
+        //     .style("fill", colorScale(d.cluster))
+        //     .text(d.id || "");
+        // }else{
+        //   nodeGroup.append("circle")
         //   .attr("r", 10)
         //   .attr("fill", colorScale(d.cluster))
         //   .attr("stroke", "#fff")
         //   .attr("stroke-width", 1.5);
-        nodeGroup.append("text")
-          .attr("text-anchor", "middle")
-          .attr("alignment-baseline", "middle")
-          .style("font-size", "20px")
-          .style("font-weight", "bold")
-          .style("fill", colorScale(d.cluster))
-          .text(d.id || "");
+        // }
+
+        // === 点を表示 ===
+        nodeGroup.append("circle")
+          .attr("r", 5)
+          .attr("fill", colorScale(d.cluster))
+          .attr("stroke", "#fff")
+          .attr("stroke-width", 1.5);
+        // === 一時的に点の代わりに品番名を表示 ===
+        // nodeGroup.append("text")
+        //    .attr("text-anchor", "middle")
+        //    .attr("alignment-baseline", "middle")
+        //    .style("font-size", "20px")
+        //    .style("font-weight", "bold")
+        //    .style("fill", colorScale(d.cluster))
+        //    .text(d.id || "");
       }
     });
 
